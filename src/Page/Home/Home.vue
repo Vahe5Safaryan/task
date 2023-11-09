@@ -180,13 +180,8 @@
             </div>
          </div>
       </section>
-
       <div>
          <FooterSection/>
-      </div>
-
-      <div>
-         <ModalForm />
       </div>
    </div>
 </template>
@@ -197,7 +192,6 @@ import CustomButton from "@/components/CustomButton.vue";
 import CustomInput from "@/components/CustomInput.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import FooterSection from '@/components/Footer.vue';
-import ModalForm from '@/components/Modal.vue'
 
 export default {
    name: 'HomePage',
@@ -207,7 +201,6 @@ export default {
       CustomInput,
       FileUpload,
       FooterSection,
-      ModalForm
    },
    data() {
       return {
