@@ -1,5 +1,5 @@
 <template>
-   <div class="custom-input">
+   <div class="custom-input" :class="{ 'invalid-input': hasTriedToSubmit && !isFormValid() }">
       <input
           v-if="inputType !== 'textarea'"
           v-bind="$attrs"
@@ -32,6 +32,9 @@ export default {
       return {
          inputValue: '',
          isLabelHidden: false,
+         length: 0,
+         isInvalid: false,
+         hasTriedToSubmit: false,
       };
    },
    methods: {
@@ -43,12 +46,18 @@ export default {
          }
 
          if (this.inputType === 'phone') {
-            this.inputValue = this.formatPhone(this.inputValue);
+            this.formatPhone();
          }
+
+         this.length = this.inputValue.length;
+         this.isInvalid = !this.isValid();
       },
 
-      formatPhone(phone) {
-         return phone.replace(/\D/g, '').replace(/(\d{1})?(\d{3})?(\d{3})?(\d{2})?(\d{2})?/, '+7 ($2) $3-$4-$5');
+      formatPhone() {
+         if (this.length <= this.inputValue.length) {
+            const x = this.inputValue.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            this.inputValue = '+' + (x[1] ? '7' : '') + (x[2] ? ' (' + x[2] : '') + (x[3] ? ') ' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+         }
       },
 
       isValid() {
@@ -59,6 +68,10 @@ export default {
          } else {
             return this.inputValue.trim() !== '';
          }
+      },
+
+      isFormValid() {
+         return !this.isInvalid && this.isValid();
       },
 
       isValidPhone() {
@@ -80,6 +93,13 @@ export default {
    max-width: 100%;
 }
 
+.invalid-input input.border-gray, .invalid-input textarea.border-gray {
+   border-bottom: 2px solid #E8412A;
+}
+
+.invalid-input textarea {
+   border-bottom: 2px solid #E8412A;
+}
 
 input.border-gray, textarea.border-gray {
    background: transparent;
@@ -120,8 +140,5 @@ input:hover, textarea:hover  {
    textarea {
       height: 50px;
    }
-
 }
-
-
 </style>

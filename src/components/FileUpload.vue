@@ -9,11 +9,10 @@
          </div>
          <div class="brief-place">
             <img src="/icon/imageFile.svg" alt="">
-            <a href="">Наш бриф в Google Docs</a>
+            <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSejs7kzr69Ot45UcPbgq-M3KLjjMfer2iKT2peMVGivLJvPow/viewform">Наш бриф в Google Docs</a>
             <img src="/icon/Vect1.svg" alt="">
          </div>
       </div>
-
       <div class="flex file-check">
          <div v-if="fileSizeError" class="error-message">
             {{ fileSizeError }}
@@ -22,7 +21,6 @@
             <img src="/icon/doc-icon.svg" alt="">
             {{ fileInfo }}
          </div>
-
          <div class="remove-btn-place">
             <button
                 @click="removeFile"
@@ -33,7 +31,6 @@
             </button>
          </div>
       </div>
-
    </div>
 </template>
 
@@ -86,7 +83,6 @@ export default {
                   this.$el.removeChild(input);
                }
             });
-
             input.click();
          }
       },
@@ -102,7 +98,6 @@ export default {
 </script>
 
 <style scoped>
-
 .upload-section{
    column-gap: 60px;
 }
@@ -168,7 +163,6 @@ export default {
 }
 .remove-btn-place button:hover{
    color: #3734e3;
-
 }
 .remove-btn-place button img{
    margin-right: 8px;
@@ -226,6 +220,4 @@ button.attachment-button:disabled {
       font-size: 14px;
    }
 }
-
-
 </style>

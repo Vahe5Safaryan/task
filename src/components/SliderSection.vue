@@ -58,11 +58,8 @@
         <img src="/icon/Vector1.svg" alt="">
       </button>
     </div>
-
   </div>
 </template>
-
-
 
 <script>
 import 'slick-carousel/slick/slick.css';
@@ -84,8 +81,6 @@ export default {
       dots: false,
       speed: 300,
       rows: 2,
-      // centerMode: true,
-      // centerPadding: '20px',
       responsive: [
         {
           breakpoint: 992,
@@ -156,7 +151,6 @@ export default {
   object-fit: none;
 }
 
-
 .partner-cart h6 {
   color: #9A9AAD;
   font-size: 13px;
@@ -184,8 +178,13 @@ export default {
   border: none;
   outline: none;
 }
-.btn-slide:active{
-   background: rgba(129, 129, 193, 0.1);
+.btn-slide:hover {
+   background: rgb(41, 38, 216);
+   border: 2px solid rgb(41, 38, 216);
+}
+.btn-slide:active {
+   background: rgb(9, 18, 174);
+   border: 2px solid rgb(9, 18, 174);
 }
 
 @media screen and (max-width: 1280px) {
@@ -202,18 +201,14 @@ export default {
       height: 135px;
       object-fit: contain;
    }
-
 }
 @media screen and (max-width: 769px) {
    .slider-btn-section{
       display: none;
    }
-
    .partner-cart{
       width: 250px;
    }
 }
-
-
 
 </style>

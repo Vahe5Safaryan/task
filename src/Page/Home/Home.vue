@@ -11,7 +11,7 @@
          </div>
       </section>
       <section class="top-of-all">
-         <div class="decorative-white" />
+         <div class="decorative-white"/>
          <div class="container">
             <div class="project-section">
                <div class="info-section section-half">
@@ -23,7 +23,6 @@
                         <h4>hello@riverstart.ru</h4>
                         <p>hello@riverstart.ru</p>
                      </div>
-
                      <div>
                         <div class="tg-section">
                            <img src="../../assets/img/DSC06437%201.jpg" alt="">
@@ -64,7 +63,7 @@
                            </div>
                         </div>
                         <div class="phone-office-section-link">
-                           <a href="">oceanstart.dev
+                           <a target="_blank" href="https://riverstart.ru/">oceanstart.dev
                               <img src="/icon/Group122.svg" alt="">
                            </a>
                         </div>
@@ -108,36 +107,38 @@
                   </div>
 
                   <div class="input-section">
-                     <CustomInput
-                         v-model="name"
-                         inputLabel="Имя"
-                         inputType="text"
-                         ref="nameInput"
-                     />
-                     <div class="flex ">
-                        <div class="flex-item">
-                           <CustomInput
-                               v-model="phone"
-                               inputLabel="Телефон"
-                               inputType="phone"
-                               ref="phoneInput"
-                           />
+                     <form @submit.prevent="onSubmit">
+                        <CustomInput
+                            v-model="name"
+                            inputLabel="Имя"
+                            inputType="text"
+                            ref="nameInput"
+                        />
+                        <div class="flex ">
+                           <div class="flex-item">
+                              <CustomInput
+                                  v-model="phone"
+                                  inputLabel="Телефон"
+                                  inputType="phone"
+                                  ref="phoneInput"
+                              />
+                           </div>
+                           <div class="flex-item">
+                              <CustomInput
+                                  v-model="email"
+                                  inputLabel="Почта"
+                                  inputType="email"
+                                  ref="emailInput"
+                              />
+                           </div>
                         </div>
-                        <div class="flex-item">
-                           <CustomInput
-                               v-model="email"
-                               inputLabel="Почта"
-                               inputType="email"
-                               ref="emailInput"
-                           />
-                        </div>
-                     </div>
-                     <CustomInput
-                         v-model="description"
-                         inputLabel="Опишите задачу своими словами"
-                         inputType="textarea"
-                         ref="taskInput"
-                     />
+                        <CustomInput
+                            v-model="description"
+                            inputLabel="Опишите задачу своими словами"
+                            inputType="textarea"
+                            ref="taskInput"
+                        />
+                     </form>
                   </div>
 
                   <div class="budget-section">
@@ -148,33 +149,45 @@
                             :type="selectedAmount === '500' ? 'primary' : 'secondary'"
                             class="budget-btn left-radius"
                             @click="selectedAmount = '500'"
+                            :aria-current="selectedAmount === '500'"
                         />
                         <CustomButton
                             buttonText="до 1 млн"
                             :type="selectedAmount === 'mln' ? 'primary' : 'secondary'"
                             class="budget-btn none-radius"
                             @click="selectedAmount = 'mln'"
+                            :aria-current="selectedAmount === 'mln'"
                         />
                         <CustomButton
                             buttonText=">1 млнйт"
                             :type="selectedAmount === 'moreMln' ? 'primary' : 'secondary'"
                             class="budget-btn right-radius"
                             @click="selectedAmount = 'moreMln'"
+                            :aria-current="selectedAmount === 'moreMln'"
                         />
                      </div>
                   </div>
 
                   <div class="upload-section">
-                     <FileUpload @file-uploaded="file = $event"/>
+                     <FileUpload ref="fileUpload" @file-uploaded="onFileUploaded"/>
                   </div>
 
                   <div class="send-btn-section">
-                     <CustomButton type="primary" buttonText="Оставить заявку" size="lg" @click="onSubmit"/>
+                     <CustomButton
+                         :isAnimation="true"
+                         type="primary"
+                         buttonText="Оставить заявку"
+                         size="lg"
+                         @click="onSubmit"/>
                   </div>
 
                   <div class="personal-data">
                      <h6>Нажав на кнопку, вы соглашаетесь с политикой </h6>
-                     <a href="">обработки персональных данных</a>
+                     <a target="_blank" href="https://riverstart.ru/">обработки персональных данных</a>
+                  </div>
+
+                  <div>
+                     <ModalForm ref="modalForm"/>
                   </div>
                </div>
             </div>
@@ -192,6 +205,7 @@ import CustomButton from "@/components/CustomButton.vue";
 import CustomInput from "@/components/CustomInput.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import FooterSection from '@/components/Footer.vue';
+import ModalForm from '@/components/Modal.vue'
 
 export default {
    name: 'HomePage',
@@ -201,6 +215,7 @@ export default {
       CustomInput,
       FileUpload,
       FooterSection,
+      ModalForm,
    },
    data() {
       return {
@@ -210,17 +225,40 @@ export default {
          phone: null,
          email: null,
          description: null,
-         file: null
+         file: null,
+         isFileUploaded: false,
       }
    },
    methods: {
+      onFileUploaded() {
+         this.isFileUploaded = true;
+      },
       onSubmit() {
-         console.log(this.$data)
-
-         Object.keys(this.$data).map(datum => {
-            this[datum] = null
+         Object.values(this.$refs).forEach((ref) => {
+            ref.hasTriedToSubmit = true
          })
-      }
+
+         if (
+             this.$refs.nameInput.isFormValid() &&
+             this.$refs.phoneInput.isFormValid() &&
+             this.$refs.emailInput.isFormValid() &&
+             this.$refs.taskInput.isFormValid() &&
+             this.isFileUploaded
+         ) {
+            console.log('Все поля заполнены правильно, файл добавлен');
+            Object.values(this.$refs).forEach((ref) => {
+               ref.inputValue = ''
+               ref.hasTriedToSubmit = false
+            })
+            this.$refs.fileUpload.removeFile()
+            this.$refs.modalForm.isSuccessful = true;
+         } else {
+            console.log('Неверные поля ввода или файл не добавлен');
+            this.$refs.modalForm.isSuccessful = false;
+         }
+
+         this.$refs.modalForm.isVisible = true;
+      },
    }
 }
 </script>
@@ -229,7 +267,6 @@ export default {
 .d-block {
    display: block;
 }
-
 .d-none {
    display: none;
 }
@@ -239,7 +276,7 @@ export default {
    padding: 80px 0 0 0;
 }
 
-.heading{
+.heading {
    padding: 0 60px;
 }
 
@@ -280,12 +317,15 @@ export default {
    font-weight: 400;
    line-height: 160%;
 }
+
 section {
    position: relative;
 }
+
 .top-of-all {
    z-index: 1;
 }
+
 .decorative-white {
    position: absolute;
    right: 0;
@@ -295,15 +335,18 @@ section {
    z-index: -1;
    background: #EEEFF4;
 }
+
 .mail-section {
    display: flex;
    flex-direction: column;
    row-gap: 70px;
    margin-top: 170px;
 }
+
 .info-section {
    padding: 10px 30px 0 10px;
 }
+
 .info-section h4 {
    color: #F7F7FA;
    font-size: 42px;
@@ -351,7 +394,6 @@ section {
    opacity: 0.5;
    margin-top: 15px;
 }
-
 
 .address-section {
    display: flex;
@@ -401,6 +443,7 @@ section {
 }
 
 .interested-section {
+   position: relative;
    padding: 90px 0 80px 90px;
    background: #EEEFF4;
 }
@@ -492,30 +535,22 @@ section {
 }
 
 @media screen and (max-width: 1600px) {
-   .project-section {
-      padding: 10px 60px 0 40px;
-   }
-
    .interested-section {
       padding: 130px 10px 80px 20px;
    }
-
 }
 
 @media screen and (max-width: 1280px) {
-   .home-section{
+   .home-section {
       padding: 50px 0;
    }
-   .heading{
+
+   .heading {
       padding: 0 30px;
    }
+
    .heading h1 {
       font-size: 56px;
-   }
-
-
-   .project-section {
-      padding: 80px 115px 0 80px;
    }
 
    .project-section h2 {
@@ -624,16 +659,8 @@ section {
 }
 
 @media screen and (max-width: 991px) {
-   .project-section {
-      padding: 80px 60px 0 60px
-   }
-
    .interested-section {
-      padding: 80px 10px 65px 40px
-   }
-
-   .rights-reserved {
-      column-gap: 40px;
+      padding: 80px 10px 65px 20px
    }
 }
 
@@ -647,8 +674,8 @@ section {
    }
 
    .section-half:nth-child(2) {
-       grid-row: 3;
-    }
+      grid-row: 3;
+   }
 
    .section-half:nth-child(3) {
       grid-column: 1;
@@ -683,7 +710,6 @@ section {
       flex-direction: row;
       column-gap: 70px;
       margin: 60px 0 30px;
-
    }
 
    .info-section h4 {
@@ -730,10 +756,6 @@ section {
       margin-top: 50px;
    }
 
-   .under-contact-section {
-      padding: 57px 40px 10px 40px;
-   }
-
    .phone-office-section {
       margin-top: 30px;
       max-width: 690px;
@@ -746,9 +768,7 @@ section {
    .contact-section h5 {
       font-size: 12px;
    }
-
 }
-
 
 @media screen and (max-width: 577px) {
    .project-section {
@@ -770,11 +790,12 @@ section {
    .phone-office-section {
       padding: 22px;
    }
+
    .interested-section {
       padding: 30px 30px 45px 30px;
    }
 
-   .info-section{
+   .info-section {
       padding: 10px 10px 0 10px;
    }
 
@@ -806,15 +827,8 @@ section {
       margin-bottom: 80px;
       row-gap: 38px;
    }
-
    .flex-item {
       width: 100%;
    }
-
-   .under-contact-section {
-      padding: 50px 30px 50px 30px;
-   }
 }
-
-
 </style>
